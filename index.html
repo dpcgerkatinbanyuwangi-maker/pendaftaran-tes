@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 25px;
+      max-width: 500px;
+      margin: auto;
+    }
+
+    h2 {
+      text-align: center;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      margin: 8px 0 15px 0;
+      box-sizing: border-box;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background: #1a73e8;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #1557b0;
+    }
+
+    #hasil {
+      margin-top: 20px;
+      padding: 15px;
+    }
+
+    .sukses {
+      background: #d9ead3;
+      color: #274e13;
+    }
+
+    .gagal {
+      background: #f4cccc;
+      color: #990000;
+    }
+
+    a {
+      display: block;
+      margin-top: 15px;
+      padding: 12px;
+      text-align: center;
+      background: #34a853;
+      color: white;
+      text-decoration: none;
+    }
+  </style>
+</head>
+
+<body>
+
+<h2>CEK PENDAFTARAN</h2>
+
+<label>Kode Pendaftaran</label>
+
+<input
+  type="text"
+  id="kode"
+  placeholder="Contoh: REG-0001"
+>
+
+<label>NIK</label>
+
+<input
+  type="text"
+  id="nik"
+  placeholder="Masukkan NIK"
+>
+
+<button onclick="cekData()">
+  CEK PENDAFTARAN
+</button>
+
+<div id="hasil"></div>
+
+<script>
+
+function cekData() {
+
+  const kode = document.getElementById("kode").value.trim();
+  const nik = document.getElementById("nik").value.trim();
+
+  const hasil = document.getElementById("hasil");
+
+  if (!kode || !nik) {
+
+    hasil.className = "gagal";
+
+    hasil.innerHTML =
+      "Kode Pendaftaran dan NIK wajib diisi.";
+
+    return;
+  }
+
+  hasil.className = "";
+  hasil.innerHTML = "Sedang mengecek...";
+
+  google.script.run
+    .withSuccessHandler(function(response) {
+
+      if (response.berhasil) {
+
+        hasil.className = "sukses";
+
+        hasil.innerHTML =
+          "<b>PENDAFTARAN BERHASIL</b><br><br>" +
+          "Nama: " + response.nama +
+          "<br><br>" +
+          "Silakan lanjut ke Form Bukti NIK." +
+          "<a href='https://docs.google.com/forms/d/FORM_ID_ANDA/view' target='_blank'>" +
+          "LANJUT UPLOAD BUKTI NIK" +
+          "</a>";
+
+      } else {
+
+        hasil.className = "gagal";
+
+        hasil.innerHTML =
+          "<b>BELUM TERDAFTAR</b><br><br>" +
+          response.pesan;
+
+      }
+
+    })
+    .withFailureHandler(function(error) {
+
+      hasil.className = "gagal";
+
+      hasil.innerHTML =
+        "Terjadi kesalahan sistem.";
+
+    })
+    .cekPendaftaran(kode, nik);
+}
+
+</script>
+
+</body>
+</html>
